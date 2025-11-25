@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Validação de Dados no Excel</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 20px; }
+        .container { max-width: 700px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-left: 6px solid #1E8449; }
+        h1 { color: #1E8449; text-align: center; margin-bottom: 20px; }
+        .question { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #ccc; }
+        .question p { font-weight: bold; margin-bottom: 10px; color: #333; }
+        .option-label { display: block; margin: 8px 0; padding: 10px; cursor: pointer; border-radius: 5px; background-color: #f7f9fb; transition: background-color 0.2s; border: 1px solid #eee; }
+        .option-label:hover { background-color: #e8f0fe; }
+        .feedback { margin-top: 10px; font-size: 0.9em; padding: 10px; border-radius: 5px; display: none; }
+        .correct-feedback { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .incorrect-feedback { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        button { background-color: #1E8449; color: white; border: none; padding: 12px 30px; font-size: 16px; cursor: pointer; border-radius: 5px; display: block; margin: 30px auto 0; transition: background-color 0.3s; }
+        button:hover { background-color: #145b32; }
+        #result { margin-top: 25px; text-align: center; font-weight: bold; font-size: 1.2em; padding: 15px; border-radius: 5px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Quiz: Validação de Dados (Aula 5)</h1>
+    <p style="text-align: center; color: #555;">Teste seus conhecimentos sobre o controle de qualidade de dados no Excel.</p>
+    
+    <form id="quizForm">
+        
+        <!-- Q1: Localização -->
+        <div class="question" id="q1"><p>1. Em qual aba da Faixa de Opções do Excel a ferramenta Validação de Dados está localizada?</p>
+            <label class="option-label"><input type="radio" name="q1" value="a"> Página Inicial</label>
+            <label class="option-label"><input type="radio" name="q1" value="b"> Revisão</label>
+            <label class="option-label"><input type="radio" name="q1" value="c"> Dados</label>
+            <div class="feedback"></div>
+        </div>
+        
+        <!-- Q2: Aplicação Lista -->
+        <div class="question" id="q2"><p>2. Qual critério de Validação de Dados é usado para criar uma Lista Suspensa (Dropdown List) na célula?</p>
+            <label class="option-label"><input type="radio" name="q2" value="a"> Comprimento de Texto</label>
+            <label class="option-label"><input type="radio" name="q2" value="b"> Lista</label>
+            <label class="option-label"><input type="radio" name="q2" value="c"> Personalizado</label>
+            <div class="feedback"></div>
+        </div>
+        
+        <!-- Q3: Mensagem de Entrada vs Alerta -->
+        <div class="question" id="q3"><p>3. Qual recurso é exibido quando o usuário APENAS SELECIONA a célula, oferecendo instruções antes da digitação?</p>
+            <label class="option-label"><input type="radio" name="q3" value="a"> Alerta de Erro - Estilo Parar</label>
+            <label class="option-label"><input type="radio" name="q3" value="b"> Mensagem de Entrada</label>
+            <label class="option-label"><input type="radio" name="q3" value="c"> Formatação Condicional</label>
+            <div class="feedback"></div>
+        </div>
+
+        <!-- Q4: Estilo Parar -->
+        <div class="question" id="q4"><p>4. Qual Estilo de Alerta de Erro bloqueia a entrada de dados inválidos de forma mais rigorosa, exigindo a correção?</p>
+            <label class="option-label"><input type="radio" name="q4" value="a"> Informação</label>
+            <label class="option-label"><input type="radio" name="q4" value="b"> Aviso</label>
+            <label class="option-label"><input type="radio" name="q4" value="c"> Parar</label>
+            <div class="feedback"></div>
+        </div>
+
+        <!-- Q5: Comprimento de Texto -->
+        <div class="question" id="q5"><p>5. Para garantir que um campo de CÓDIGO de produto tenha no máximo 8 caracteres, você usaria o critério:</p>
+            <label class="option-label"><input type="radio" name="q5" value="a"> Número Inteiro</label>
+            <label class="option-label"><input type="radio" name="q5" value="b"> Comprimento de Texto</label>
+            <label class="option-label"><input type="radio" name="q5" value="c"> Decimal</label>
+            <div class="feedback"></div>
+        </div>
+
+        <button type="button" onclick="checkAllAnswers()">Corrigir Quiz</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    // Gabarito e Justificativas
+    const answerKey = {
+        q1: 'c', // Dados
+        q2: 'b', // Lista
+        q3: 'b', // Mensagem de Entrada
+        q4: 'c', // Parar
+        q5: 'b'  // Comprimento de Texto
+    };
+
+    const correctRationales = {
+        q1: 'A Validação de Dados faz parte do grupo Ferramentas de Dados, localizado na Aba Dados do Excel.',
+        q2: 'O critério "Lista" é o único que permite definir uma lista de valores que aparecerão em um menu suspenso (dropdown).',
+        q3: 'A Mensagem de Entrada tem a função de guiar o usuário com uma instrução assim que a célula é selecionada, antes da entrada de dados.',
+        q4: 'O estilo "Parar" (Stop) é o mais rigoroso, pois impede completamente que o dado inválido seja inserido, forçando o usuário a corrigir ou cancelar.',
+        q5: 'O critério "Comprimento de Texto" é usado para limitar o número de caracteres que podem ser digitados em uma célula, sendo ideal para códigos ou senhas.'
+    };
+
+    function checkAnswer(qId) {
+        const questionDiv = document.getElementById(qId);
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        const options = questionDiv.querySelectorAll('input[type="radio"]');
+        let selectedValue = null;
+        let isCorrect = false;
+
+        options.forEach(option => {
+            if (option.checked) {
+                selectedValue = option.value;
+                if (option.value === answerKey[qId]) {
+                    isCorrect = true;
+                }
+            }
+        });
+
+        feedbackDiv.style.display = 'block';
+        feedbackDiv.classList.remove('correct-feedback', 'incorrect-feedback');
+
+        if (selectedValue === null) {
+            feedbackDiv.innerHTML = 'Resposta não fornecida.';
+        } else {
+            const correctAnswer = answerKey[qId];
+            let correctOptionText = '';
+            
+            questionDiv.querySelectorAll('.option-label').forEach(label => {
+                const radio = label.querySelector('input[type="radio"]');
+                if (radio.value === correctAnswer) {
+                    correctOptionText = label.textContent.trim();
+                }
+            });
+
+            if (isCorrect) {
+                feedbackDiv.classList.add('correct-feedback');
+                feedbackDiv.innerHTML = 'Correto! ' + correctRationales[qId];
+            } else {
+                feedbackDiv.classList.add('incorrect-feedback');
+                feedbackDiv.innerHTML = `Incorreto. A resposta correta é: <strong>${correctOptionText}</strong>. Justificativa: ${correctRationales[qId]}`;
+            }
+        }
+    }
+
+    function checkAllAnswers() {
+        let score = 0;
+        const total = 5;
+        const form = document.forms['quizForm'];
+        let answeredCount = 0;
+
+        for (let i = 1; i <= total; i++) {
+            const qId = 'q' + i;
+            const options = form[qId];
+            let isAnswered = false;
+
+            for (let j = 0; j < options.length; j++) {
+                if (options[j].checked) {
+                    isAnswered = true;
+                    answeredCount++;
+                    if (options[j].value === answerKey[qId]) {
+                        score++;
+                    }
+                    break;
+                }
+            }
+        }
+        
+        const resultDiv = document.getElementById('result');
+        
+        if (answeredCount < total) {
+             resultDiv.style.display = "block";
+             resultDiv.innerHTML = "Por favor, responda todas as 5 questões antes de corrigir.";
+             resultDiv.style.color = "#d9534f";
+             return;
+        }
+
+        // Exibe a correção detalhada após garantir que todas as perguntas foram respondidas
+        for (let i = 1; i <= total; i++) {
+            checkAnswer('q' + i);
+        }
+
+        const percentage = (score / total) * 100;
+        
+        resultDiv.style.display = "block";
+        
+        let message = `Sua pontuação: ${score} de ${total} (${percentage.toFixed(0)}%).`;
+        
+        if(percentage >= 80) {
+            resultDiv.style.backgroundColor = "#e6ffed";
+            resultDiv.style.color = "#1e8449";
+            message += "<br>Excelente! Você demonstrou total domínio sobre Validação de Dados.";
+        } else {
+            resultDiv.style.backgroundColor = "#ffe6e6";
+            resultDiv.style.color = "#c0392b";
+            message += "<br>Reveja as configurações de Validação para garantir a qualidade dos seus dados!";
+        }
+        
+        resultDiv.innerHTML = message;
+    }
+</script>
+
+</body>
+</html>
